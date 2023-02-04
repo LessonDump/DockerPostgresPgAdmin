@@ -65,14 +65,58 @@ services:
                     cpus: '1'
                     memory: 4G
 
+        networks:
+            - postgres
+
+    pgadmin:
+        container_name: pgadmin_container
+        image: dpage/pgadmin4:6.19
+
+        depends_on:
+            - postgres
+
+        environment:
+            PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin@example.com}
+            PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+            PGADMIN_CONFIG_SERVER_MODE: 'False'
+
+        volumes:
+            - ./pgadmin:/var/lib/pgadmin
+
+        ports:
+            - ${PGADMIN_PORT:-5050}:80
+
+        networks:
+            - postgres
+
+        restart: unless-stopped
+
+networks:
+    postgres:
+        driver: bridge
+
 # ============ !!!!! ============
+# Create 'pgadmin' dir
+# mkdir pgadmin && sudo chown -R 5050:80 pgadmin
+# -------------------------------
 # Start:
 # docker-compose --compatibility up -d
 # -------------------------------
-# Access to postgres:
+# Access to Postgres:
 # localhost:5432
 # Username: postgres (as a default)
 # Password: changeme (as a default)
+# -------------------------------
+# Access to PgAdmin:
+# URL: http://localhost:5050
+# EMAIL: pgadmin@example.com
+# Password: admin
+# -------------------------------
+# Connect to Postgres from PgAdmin
+# Host name/address: postgres_container
+# Port: 5432
+# Maintenance DB: postgres
+# Password: changeme
 # -------------------------------
 # Stop lifted containers:
 # docker-compose --compatibility stop
@@ -83,5 +127,5 @@ services:
 # Stop and delete containers and network:
 # docker-compose --compatibility down
 # -------------------------------
-# Delete 'pgdata' directory
-# sudo rm -R pgdata
+# Clear project
+# sudo rm -r pgadmin pgdata

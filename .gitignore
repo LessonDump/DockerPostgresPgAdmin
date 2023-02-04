@@ -34,3 +34,5 @@ output/
 tmpl/
 tmpl.*
 brief.*
+pgadmin/
+pgdata/
